@@ -2,37 +2,38 @@ import pandas as pd
 import boto3
 import json
 
+
+# Load DWH Params from a file
 import configparser
-config = configparser.ConfigParser()
-config.read_file(open('dwh.cfg'))
+config_infra = configparser.ConfigParser()
+config_infra.read_file(open('infra.cfg'))
 
-KEY                    = config.get('AWS','KEY')
-SECRET                 = config.get('AWS','SECRET')
+KEY                    = config_infra.get('AWS','KEY')
+SECRET                 = config_infra.get('AWS','SECRET')
 
-DWH_CLUSTER_TYPE       = config.get("DWH","DWH_CLUSTER_TYPE")
-DWH_NUM_NODES          = config.get("DWH","DWH_NUM_NODES")
-DWH_NODE_TYPE          = config.get("DWH","DWH_NODE_TYPE")
+DWH_CLUSTER_TYPE       = config_infra.get("DWH","DWH_CLUSTER_TYPE")
+DWH_NUM_NODES          = config_infra.get("DWH","DWH_NUM_NODES")
+DWH_NODE_TYPE          = config_infra.get("DWH","DWH_NODE_TYPE")
 
-DWH_CLUSTER_IDENTIFIER = config.get("DWH","DWH_CLUSTER_IDENTIFIER")
-DWH_DB                 = config.get("DWH","DWH_DB")
-DWH_DB_USER            = config.get("DWH","DWH_DB_USER")
-DWH_DB_PASSWORD        = config.get("DWH","DWH_DB_PASSWORD")
-DWH_PORT               = config.get("DWH","DWH_PORT")
+DWH_CLUSTER_IDENTIFIER = config_infra.get("DWH","DWH_CLUSTER_IDENTIFIER")
+DWH_DB                 = config_infra.get("DWH","DWH_DB")
+DWH_DB_USER            = config_infra.get("DWH","DWH_DB_USER")
+DWH_DB_PASSWORD        = config_infra.get("DWH","DWH_DB_PASSWORD")
+DWH_PORT               = config_infra.get("DWH","DWH_PORT")
 
-DWH_IAM_ROLE_NAME      = config.get("DWH", "DWH_IAM_ROLE_NAME")
+DWH_IAM_ROLE_NAME      = config_infra.get("DWH", "DWH_IAM_ROLE_NAME")
 
-(DWH_DB_USER, DWH_DB_PASSWORD, DWH_DB)
-
-pd.DataFrame({"Param":
+print(pd.DataFrame({"Param":
                   ["DWH_CLUSTER_TYPE", "DWH_NUM_NODES", "DWH_NODE_TYPE", "DWH_CLUSTER_IDENTIFIER", "DWH_DB", "DWH_DB_USER", "DWH_DB_PASSWORD", "DWH_PORT", "DWH_IAM_ROLE_NAME"],
               "Value":
                   [DWH_CLUSTER_TYPE, DWH_NUM_NODES, DWH_NODE_TYPE, DWH_CLUSTER_IDENTIFIER, DWH_DB, DWH_DB_USER, DWH_DB_PASSWORD, DWH_PORT, DWH_IAM_ROLE_NAME]
-             })
+             }))
+
+###
 
 
+# Create clients for IAM, S3 and Redshift
 import boto3
-
-ec2 = boto3.resource("ec2", region_name = "us-west-2", aws_access_key_id = KEY, aws_secret_access_key = SECRET)
 
 s3 = boto3.resource("s3", region_name = "us-west-2", aws_access_key_id = KEY, aws_secret_access_key = SECRET)
 
@@ -40,7 +41,9 @@ iam = boto3.client("iam", region_name = "us-west-2", aws_access_key_id = KEY, aw
 
 redshift = boto3.client("redshift", region_name = "us-west-2", aws_access_key_id = KEY, aws_secret_access_key = SECRET)
 
-# TODO: Create the IAM role
+
+# Create an IAM Role that makes Redshift able to access S3 bucket (ReadOnly)
+# Create the IAM role
 try:
     print('1.1 Creating a new IAM Role')
     dwhRole = iam.create_role(Path="/",
@@ -58,18 +61,23 @@ try:
 except Exception as e:
     print(e)
     
-
-# TODO: Attach Policy
+    
+# Attach Policy
 print('1.2 Attaching Policy')
 iam.attach_role_policy(RoleName=DWH_IAM_ROLE_NAME, 
                       PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess")
 
-# TODO: Get and print the IAM role ARN
+
+# Get and print the IAM role ARN
 print('1.3 Get the IAM role ARN')
 roleArn = iam.get_role(RoleName=DWH_IAM_ROLE_NAME)["Role"]["Arn"]
 
-print(roleArn)
+print('ARN : ', roleArn)
 
+###
+
+
+# Create a RedShift Cluster
 try:
     response = redshift.create_cluster(        
         # TODO: add parameters for hardware
@@ -90,50 +98,78 @@ try:
 
 except Exception as e:
     print(e)
-    
+
+###
+
+
+# Describe the cluster to see its status
+import itertools
+import threading
+import time
+import sys
+
 def prettyRedshiftProps(props):
     pd.set_option('display.max_colwidth', -1)
     keysToShow = ["ClusterIdentifier", "NodeType", "ClusterStatus", "MasterUsername", "DBName", "Endpoint", "NumberOfNodes", 'VpcId']
     x = [(k, v) for k,v in props.items() if k in keysToShow]
     return pd.DataFrame(data=x, columns=["Key", "Value"])
 
+done = False
+#here is the animation
+def animate():
+    for c in itertools.cycle(['|', '/', '-', '\\']):
+        if done:
+            break
+        sys.stdout.write('\rcreating ' + c )
+        sys.stdout.flush()
+        time.sleep(0.1)
+    sys.stdout.write('\ravailable!     '+'\n')
+
+t = threading.Thread(target=animate)
+t.start()
+
 myClusterProps = redshift.describe_clusters(ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)['Clusters'][0]
-prettyRedshiftProps(myClusterProps)
+while myClusterProps['ClusterStatus'] != 'available':
+    myClusterProps = redshift.describe_clusters(ClusterIdentifier=DWH_CLUSTER_IDENTIFIER)['Clusters'][0]
+    time.sleep(1)
 
-from configparser import ConfigParser
+print()
+print(prettyRedshiftProps(myClusterProps))
 
-#Get the configparser object
-config_object = ConfigParser()
+done = True
+t.join()
+
+###
+
+# Defined endpoint and arn
+DWH_ENDPOINT = myClusterProps['Endpoint']['Address']
+DWH_ROLE_ARN = myClusterProps['IamRoles'][0]['IamRoleArn']
+print("DWH_ENDPOINT :: ", DWH_ENDPOINT)
+print("DWH_ROLE_ARN :: ", DWH_ROLE_ARN)
+
+###
+
+
+# Config dwh.cfg
+config_dwh = configparser.ConfigParser()
+config_dwh.read_file(open('dwh.cfg'))
 
 #Assume we need 2 sections in the config file, let's call them USERINFO and SERVERCONFIG
-config_object["CLUSTER"] = {
-    "HOST": "Chankey Pathak",
-    "DB_NAME": "chankeypathak",
-    "DB_PASSWORD": "tutswiki",
-    "DB_PORT": "tutswiki"
+config_dwh["CLUSTER"] = {
+    "HOST": DWH_ENDPOINT,
+    "DB_NAME": DWH_DB,
+    "DB_USER": DWH_DB_USER,
+    "DB_PASSWORD": DWH_DB_PASSWORD,
+    "DB_PORT": DWH_PORT
 }
 
-config_object["SERVERCONFIG"] = {
-    "host": "tutswiki.com",
-    "port": "8080",
-    "ipaddr": "8.8.8.8"
+config_dwh["IAM_ROLE"] = {
+    "ARN": DWH_ROLE_ARN
 }
+
 
 #Write the above sections to config.ini file
 with open('dwh.cfg', 'w') as conf:
-    config_object.write(conf)
+    config_dwh.write(conf)
     
-[CLUSTER]
-HOST=
-DB_NAME=dwh
-DB_USER=bankuser
-DB_PASSWORD=bank1333
-DB_PORT=5439
-
-[IAM_ROLE]
- =''
-
-[S3]
-LOG_DATA='s3://udacity-dend/log_data'
-LOG_JSONPATH='s3://udacity-dend/log_json_path.json'
-SONG_DATA='s3://udacity-dend/song_data'
+###
