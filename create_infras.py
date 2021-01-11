@@ -167,6 +167,12 @@ config_dwh["IAM_ROLE"] = {
     "ARN": DWH_ROLE_ARN
 }
 
+config_dwh["S3"] = {
+    "LOG_DATA": config_dwh.get('S3', 'LOG_DATA'),
+    "LOG_JSONPATH": config_dwh.get('S3', 'LOG_JSONPATH'),
+    "SONG_DATA": config_dwh.get('S3', 'SONG_DATA')
+}
+
 
 #Write the above sections to config.ini file
 with open('dwh.cfg', 'w') as conf:
