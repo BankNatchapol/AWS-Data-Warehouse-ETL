@@ -7,17 +7,50 @@ config.read('dwh.cfg')
 
 # DROP TABLES
 
-staging_events_table_drop = ""
-staging_songs_table_drop = ""
-songplay_table_drop = ""
-user_table_drop = ""
-song_table_drop = ""
-artist_table_drop = ""
-time_table_drop = ""
+staging_events_table_drop = """
+DROP TABLE IF EXISTS "staging_events";
+"""
+staging_songs_table_drop = """
+DROP TABLE IF EXISTS "staging_songs";
+"""
+songplay_table_drop = """
+DROP TABLE IF EXISTS "songplay";
+"""
+user_table_drop = """
+DROP TABLE IF EXISTS "user";
+"""
+song_table_drop = """
+DROP TABLE IF EXISTS "song";
+"""
+artist_table_drop = """
+DROP TABLE IF EXISTS "artist";
+"""
+time_table_drop = """
+DROP TABLE IF EXISTS "time";
+"""
 
 # CREATE TABLES
 
 staging_events_table_create= ("""
+CREATE TABLE "staging_events" (
+    "id" double precision DEFAULT nextval('sporting_event_ticket_seq') NOT NULL,
+    "artist"  character varying (255) NOT NULL,
+    "auth" character varying (11) NOT NULL,
+    "gender" character varying (1) NOT NULL,
+    "itemiInSession" numeric NOT NULL,
+    "lastName" character varying (255) NOT NULL,
+    "length" double precision NOT NULL,
+    "level" character varying (4) NOT NULL,
+    "location" character varying (255) NOT NULL,
+    "method" character varying (4) NOT NULL,
+    "registration" double precision NOT NULL,
+    "sessionId" numeric NOT NULL,
+    "song" character varying (255) NOT NULL,
+    "status" numeric(3,0) NOT NULL,
+    "ts" character varying (255) NOT NULL,
+    "userAgent" character varying (255) NOT NULL,
+    "userId" numeric NOT NULL,
+);
 """)
 
 staging_songs_table_create = ("""
