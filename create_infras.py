@@ -80,19 +80,19 @@ print('ARN : ', roleArn)
 # Create a RedShift Cluster
 try:
     response = redshift.create_cluster(        
-        # TODO: add parameters for hardware
+        # Add parameters for hardware
         ClusterType=DWH_CLUSTER_TYPE,
         NodeType=DWH_NODE_TYPE,
         NumberOfNodes=int(DWH_NUM_NODES),
         
 
-        # TODO: add parameters for identifiers & credentials
+        # Add parameters for identifiers & credentials
         DBName = DWH_DB,
         ClusterIdentifier = DWH_CLUSTER_IDENTIFIER,
         MasterUsername = DWH_DB_USER,
         MasterUserPassword = DWH_DB_PASSWORD,
         
-        # TODO: add parameter for role (to allow s3 access)
+        # Add parameter for role (to allow s3 access)
         IamRoles = [roleArn]
     )
 
@@ -115,7 +115,7 @@ def prettyRedshiftProps(props):
     return pd.DataFrame(data=x, columns=["Key", "Value"])
 
 done = False
-#here is the animation
+# The animation funation
 def animate():
     for c in itertools.cycle(['|', '/', '-', '\\']):
         if done:
@@ -154,7 +154,6 @@ print("DWH_ROLE_ARN :: ", DWH_ROLE_ARN)
 config_dwh = configparser.ConfigParser()
 config_dwh.read_file(open('dwh.cfg'))
 
-#Assume we need 2 sections in the config file, let's call them USERINFO and SERVERCONFIG
 config_dwh["CLUSTER"] = {
     "HOST": DWH_ENDPOINT,
     "DB_NAME": DWH_DB,
@@ -174,7 +173,7 @@ config_dwh["S3"] = {
 }
 
 
-#Write the above sections to config.ini file
+#Write the above sections to dwh.cfg file
 with open('dwh.cfg', 'w') as conf:
     config_dwh.write(conf)
     
