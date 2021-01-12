@@ -37,18 +37,18 @@ CREATE TABLE "staging_events" (
     "auth" character varying (11),
     "firstName" character varying (255),
     "gender" char (1),
-    "itemiInSession" integer NOT NULL,
+    "itemiInSession" integer,
     "lastName" character varying (255),
     "length" double precision,
-    "level" character varying (4) NOT NULL,
+    "level" character varying (4),
     "location" character varying (255),
-    "method" character varying (4) NOT NULL,
-    "page" character varying (255) NOT NULL,
+    "method" character varying (4),
+    "page" character varying (255),
     "registration" double precision,
-    "sessionId" integer NOT NULL,
+    "sessionId" integer,
     "song" character varying (255),
-    "status" integer NOT NULL,
-    "ts" numeric NOT NULL,
+    "status" integer ,
+    "ts" numeric,
     "userAgent" character varying (255),
     "userId" integer 
 );
@@ -56,16 +56,16 @@ CREATE TABLE "staging_events" (
 
 staging_songs_table_create = ("""
 CREATE TABLE "staging_songs" (
-    "num_songs" integer NOT NULL,
-    "artist_id"  character varying (255) NOT NULL,
+    "num_songs" integer,
+    "artist_id"  character varying (255),
     "artist_latitude" double precision ,
     "artist_longitude" double precision,
     "artist_location" character varying (255),
-    "artist_name" character varying (255) NOT NULL,
-    "song_id" character varying (255) NOT NULL,
-    "title" character varying (255) NOT NULL,
+    "artist_name" character varying (255),
+    "song_id" character varying (255),
+    "title" character varying (255),
     "duration" double precision,
-    "year" integer NOT NULL
+    "year" integer
 );
 """)
 
