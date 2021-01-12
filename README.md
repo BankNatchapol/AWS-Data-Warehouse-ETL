@@ -141,7 +141,7 @@ dwh.cfg :
 
 
 ### Create all AWS infrastructures
-> python create_infras.py
+>> python create_infras.py
 
 ### Create Tables in AWS Redshift
 > python create_tables.py
