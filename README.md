@@ -48,6 +48,7 @@
         <li><a href="#test-queries">Test queries</a></li>
       </ul>
     </li>
+    <li><a href="#other-files">Other files</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
@@ -175,6 +176,13 @@ run script in test_queries.ipynb
   &emsp;&emsp;&emsp;&nbsp;&nbsp;JOIN songs s on sp.song_id = s.song_id<br>
   &emsp;&emsp;&emsp;&nbsp;&nbsp;JOIN times t on sp.start_time = t.start_time<br>
   <img src="./images/query6.png"/>
+<!-- OTHER FILES -->
+## Other files
+delete all infrastructures on AWS
+> python delete_infras.py
+
+print all errors
+> python stl_load_errors.py
 
 <!-- CONTACT -->
 ## Contact
