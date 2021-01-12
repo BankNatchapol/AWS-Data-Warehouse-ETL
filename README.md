@@ -177,7 +177,7 @@ run script in test_queries.ipynb
 
 Facebook - [@Natchapol Patamawisut](https://www.facebook.com/natchapol.patamawisut/)
 
-Project Link: [https://github.com/BankNatchapol/ETL-with-Python-psycopg2](https://github.com/BankNatchapol/AWS-Data-Warehouse-ETL)
+Project Link: [https://github.com/BankNatchapol/AWS-Data-Warehouse-ETL](https://github.com/BankNatchapol/AWS-Data-Warehouse-ETL)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
