@@ -71,7 +71,7 @@ CREATE TABLE "staging_songs" (
 
 songplay_table_create = ("""
 CREATE TABLE "songplays" (
-    "songplay_id" int identity(0, 1),
+    "songplay_id" int identity(0, 1) primary key,
     "start_time" timestamp NOT NULL,
     "user_id" integer,
     "level"  character varying (4) NOT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE "songplays" (
 
 user_table_create = ("""
 CREATE TABLE "users" (
-    "user_id" integer NOT NULL,
+    "user_id" integer primary key,
     "firstName" character varying (255),
     "lastName" character varying (255),
     "gender" character varying (1),
@@ -95,7 +95,7 @@ CREATE TABLE "users" (
 
 song_table_create = ("""
 CREATE TABLE "songs" (
-    "song_id" character varying (255) NOT NULL,
+    "song_id" character varying (255) primary key,
     "title" character varying (255) NOT NULL,
     "artist_id" character varying (255) NOT NULL,
     "year" integer NOT NULL,
@@ -105,7 +105,7 @@ CREATE TABLE "songs" (
 
 artist_table_create = ("""
 CREATE TABLE "artists" (
-    "artist_id"  character varying (255) NOT NULL,
+    "artist_id"  character varying (255) primary key,
     "name" character varying (255),
     "location" character varying (255),
     "artist_latitude" double precision ,
@@ -115,7 +115,7 @@ CREATE TABLE "artists" (
 
 time_table_create = ("""
 CREATE TABLE "times" (
-    "start_time" timestamp NOT NULL,
+    "start_time" timestamp primary key,
     "hour" integer NOT NULL,
     "day" integer NOT NULL,
     "week" integer NOT NULL,
