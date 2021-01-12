@@ -29,7 +29,7 @@
     </li>
     <li><a href="#dataset">Dataset</a>
         <ul>
-        <li><a href="#song-dataset">Project Dataset</a></li>
+        <li><a href="#project-dataset">Project Dataset</a></li>
         <li><a href="#song-dataset">Song Dataset</a></li>
         <li><a href="#log-dataset">Log Dataset</a></li>
       </ul>
@@ -38,7 +38,15 @@
       <a href="#data-model">Data Model</a>
     </li>
 <li>
-      <a href="#getting-started">Getting Started</a>
+      <a href="#working-processes">Working Processes</a>
+      <ul>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#config-files">Config files</a></li>
+        <li><a href="#create-all-aws-infrastructures">Create all AWS infrastructures</a></li>
+        <li><a href="#create-tables-in-aws-redshift">Create Tables in AWS Redshift</a></li>
+        <li><a href="#etl-process">ETL Process</a></li>
+        <li><a href="#test-queries">Test queries</a></li>
+      </ul>
     </li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -93,8 +101,8 @@ And below is an example of what the data in a log file, 2018-11-12-events.json, 
 This is my database Star Schema.
 <img src="https://udacity-reviews-uploads.s3.us-west-2.amazonaws.com/_attachments/38715/1608661799/Song_ERD.png"/>
 
-<!-- GETTING STARTED -->
-## Getting Started
+<!-- WORKING PROCESSES -->
+## Working Processes
 
 ### Installation
 install package with
@@ -142,7 +150,7 @@ dwh.cfg :
 ### Create Tables in AWS Redshift
 > python create_tables.py
 
-### ETL Processes
+### ETL Process
 > python <span>etl.py</span>
 
 ### Test queries
